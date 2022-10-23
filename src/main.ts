@@ -2,9 +2,9 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as github from '@actions/github';
 
-import {Cargo, Cross} from '@actions-rs/core';
+import { Cargo, Cross } from '@actions-rs/core';
 import * as input from './input';
-import {CheckRunner} from './check';
+import { CheckRunner } from './check';
 
 export async function run(actionInput: input.Input): Promise<void> {
     const startedAt = new Date().toISOString();
@@ -98,7 +98,7 @@ async function main(): Promise<void> {
         const actionInput = input.get();
 
         await run(actionInput);
-    } catch (error) {
+    } catch (error: any) {
         core.setFailed(error.message);
     }
 }
