@@ -1,8 +1,11 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { GitHub } from '@actions/github/lib/utils';
+
+type GitHub = InstanceType<typeof GitHub>;
 
 const pkg = require('../package.json');
-import {plural} from './render';
+import { plural } from './render';
 
 const USER_AGENT = `${pkg.name}/${pkg.version} (${pkg.bugs.url})`;
 
@@ -161,8 +164,8 @@ See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
         }
     }
 
-    private async createCheck(client: any, options: CheckOptions): Promise<number> {
-        const response = await client.checks.create({
+    private async createCheck(client: GitHub, options: CheckOptions): Promise<number> {
+        const response = await client.rest.checks.create({
             owner: options.owner,
             repo: options.repo,
             name: options.name,
@@ -174,7 +177,7 @@ See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
         return response.data.id;
     }
 
-    private async runUpdateCheck(client: any, checkRunId: number, options: CheckOptions): Promise<void> {
+    private async runUpdateCheck(client: GitHub, checkRunId: number, options: CheckOptions): Promise<void> {
         // Checks API allows only up to 50 annotations per request,
         // should group them into buckets
         let annotations = this.getBucket();
@@ -207,7 +210,7 @@ See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
             }
 
             // TODO: Check for errors
-            await client.checks.update(req);
+            await client.rest.checks.update(req);
 
             annotations = this.getBucket();
         }
@@ -215,7 +218,7 @@ See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
         return;
     }
 
-    private async successCheck(client: any, checkRunId: number, options: CheckOptions): Promise<void> {
+    private async successCheck(client: GitHub, checkRunId: number, options: CheckOptions): Promise<void> {
         let req: any = {
             owner: options.owner,
             repo: options.repo,
@@ -232,13 +235,13 @@ See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
         };
 
         // TODO: Check for errors
-        await client.checks.update(req);
+        await client.rest.checks.update(req);
 
         return;
     }
 
     /// Cancel whole check if some unhandled exception happened.
-    private async cancelCheck(client: any, checkRunId: number, options: CheckOptions): Promise<void> {
+    private async cancelCheck(client: GitHub, checkRunId: number, options: CheckOptions): Promise<void> {
         let req: any = {
             owner: options.owner,
             repo: options.repo,
@@ -255,7 +258,7 @@ See https://github.com/actions-rs/clippy-check/issues/2 for details.`);
         };
 
         // TODO: Check for errors
-        await client.checks.update(req);
+        await client.rest.checks.update(req);
 
         return;
     }
